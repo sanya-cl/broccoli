@@ -1,1 +1,159 @@
 <!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой кликер</title>
+    <style>
+        /* Делаем страницу красивой и удобной */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* Градиентный фон (красиво!) */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        /* Стиль для счётчика */
+        .score {
+            font-size: 80px;
+            font-weight: bold;
+            color: #764ba2;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        /* Кнопка "Клик!" */
+        .click-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            font-size: 28px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 20px rgba(118, 75, 162, 0.4);
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Эффект при наведении мыши */
+        .click-btn:hover {
+            transform: scale(1.05);
+            /* Увеличивается чуть-чуть */
+            box-shadow: 0 8px 30px rgba(118, 75, 162, 0.6);
+        }
+
+        /* Эффект при нажатии */
+        .click-btn:active {
+            transform: scale(0.95);
+            /* Сжимается, как будто нажали */
+        }
+
+        /* Кнопка сброса */
+        .reset-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 15px;
+            margin-left: 10px;
+        }
+
+        .reset-btn:hover {
+            background: #ee5a24;
+            transform: scale(1.05);
+        }
+
+        /* Дополнительный блок с кнопками */
+        .buttons-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .buttons-row .click-btn {
+            flex: 2;
+        }
+
+        .buttons-row .reset-btn {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖱️ КЛИКЕР</h1>
+        <p class="subtitle">Нажимай на кнопку, чтобы увеличить счёт</p>
+
+        <!--
+            Здесь магия Flask!
+            {{ score }} - это значение, которое мы передали из main.py
+        -->
+        <div class="score" id="scoreDisplay">
+            {{ score }}
+        </div>
+
+        <!-- Форма для отправки данных на сервер -->
+        <!-- action="/" - отправляем на главную страницу -->
+        <!-- method="post" - используем метод POST (чтобы сервер понял, что нажали кнопку) -->
+        <form action="/" method="post">
+            <button type="submit" class="click-btn">👇 КЛИК!</button>
+        </form>
+
+        <!-- Форма для сброса счётчика -->
+        <!-- Тут мы используем отдельную кнопку, которая тоже отправляет POST -->
+        <form action="/reset" method="post" style="margin-top: 10px;">
+            <button type="submit" class="reset-btn">🔄 Сбросить</button>
+        </form>
+
+        <!--
+            Немного подсказки:
+            Обрати внимание - у нас ДВЕ формы!
+            - Первая (с кнопкой "КЛИК!") отправляет на '/'
+            - Вторая (с кнопкой "Сбросить") отправляет на '/reset'
+            Это разные адреса, и для них нужны разные функции в Python!
+        -->
+
+        <p style="margin-top: 20px; color: #999; font-size: 12px;">
+            Сделано на Flask ❤️
+        </p>
+    </div>
+</body>
+</html>
