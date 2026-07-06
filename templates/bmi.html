@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расчёт ИМТ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f0f4f8;
+        }
+        h1 {
+            color: #2c3e50;
+            font-weight: 400;
+        }
+        .nav {
+            margin-bottom: 20px;
+        }
+        .nav a {
+            margin-right: 15px;
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 12px;
+        }
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin: 4px 0 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .result {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        .error {
+            color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="/">Диетолог</a>
+        <a href="/bmi">ИМТ</a>
+        <a href="/diets">Рационы</a>
+    </div>
+    <div class="card">
+        <h1>Индекс массы тела</h1>
+        {% if user_name %}
+            <p>Привет, <strong>{{ user_name }}</strong>.</p>
+        {% endif %}
+
+        <form method="POST">
+            <label for="name">Ваше имя (будет запомнено):</label>
+            <input type="text" id="name" name="name" value="{{ user_name }}" placeholder="Имя">
+
+            <label for="weight">Вес (кг):</label>
+            <input type="number" id="weight" name="weight" step="0.1" placeholder="70" required>
+
+            <label for="height">Рост (см):</label>
+            <input type="number" id="height" name="height" step="0.1" placeholder="175" required>
+
+            <button type="submit">Рассчитать</button>
+        </form>
+
+        {% if result %}
+            <div class="result">
+                {% if result.error %}
+                    <p class="error">{{ result.error }}</p>
+                {% else %}
+                    <h3>Результат для {{ result.name }}</h3>
+                    <p><strong>ИМТ:</strong> {{ result.bmi }}</p>
+                    <p><strong>Категория:</strong> {{ result.category }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

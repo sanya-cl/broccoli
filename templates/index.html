@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Персональный диетолог</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f0f4f8;
+        }
+        h1 {
+            color: #2c3e50;
+            font-weight: 400;
+        }
+        .nav {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .nav a {
+            margin: 0 15px;
+            color: #2980b9;
+            text-decoration: none;
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 12px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin: 4px 0 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .dish {
+            background: #d4edda;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 4px 0;
+        }
+        .missing {
+            background: #f8d7da;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 4px 0;
+        }
+        .error {
+            color: #c0392b;
+        }
+        .result-box {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="/">Диетолог</a>
+        <a href="/bmi">ИМТ</a>
+        <a href="/diets">Рационы</a>
+    </div>
+
+    <div class="card">
+        <h1>Персональный диетолог</h1>
+        {% if user_name %}
+            <p>Привет, <strong>{{ user_name }}</strong>.</p>
+        {% endif %}
+
+        <form method="POST">
+            <label for="user_name">Ваше имя:</label>
+            <input type="text" id="user_name" name="user_name" value="{{ user_name }}" placeholder="Введите имя">
+
+            <label for="products">Продукты в холодильнике (через запятую):</label>
+            <input type="text" id="products" name="products" value="{{ last_products or '' }}" placeholder="яйца, молоко, хлеб, масло" required>
+
+            <button type="submit">Подобрать рацион</button>
+        </form>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        {% if dishes is defined %}
+            <div class="result-box">
+                <h3>Можно приготовить:</h3>
+                {% if dishes %}
+                    {% for dish in dishes %}
+                        <div class="dish">{{ dish }}</div>
+                    {% endfor %}
+                {% else %}
+                    <p>Ничего не выходит. Попробуйте докупить продукты.</p>
+                {% endif %}
+
+                <h3>Что докупить:</h3>
+                {% if missing %}
+                    {% for dish, items in missing.items() %}
+                        <div class="missing">
+                            <strong>{{ dish }}</strong> – не хватает: {{ items|join(', ') }}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>У вас есть всё для этих блюд.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
