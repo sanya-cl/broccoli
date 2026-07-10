@@ -210,31 +210,24 @@ def get_outfit_key(event_type, weather_category):
 
 
 def get_outfit(city_name, event_type):
-    """Главная функция подбора образа"""
-    # Получаем погоду
     weather_data = get_weather(city_name)
 
     if not weather_data:
         return None, None
 
-    # Определяем категорию погоды (одна из 4х)
     weather_category = get_weather_category(
         weather_data['main_weather'],
         weather_data['temperature']
     )
 
-    # Ищем образ
     outfit_key = get_outfit_key(event_type, weather_category)
     outfit = OUTFITS_DATABASE.get(outfit_key)
 
-    # Если точного образа нет, берем прогулку
     if not outfit:
         outfit = OUTFITS_DATABASE.get(f'walk_{weather_category}')
 
-    # Добавляем категорию погоды в данные
     weather_data['weather_category'] = weather_category
 
-    # Карта для эмодзи
     weather_emoji = {
         'снег': '❄️',
         'дождь': '🌧',
@@ -245,8 +238,6 @@ def get_outfit(city_name, event_type):
 
     return outfit, weather_data
 
-
-# ===== РОУТЫ =====
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -261,11 +252,9 @@ def index():
             flash('Выберите мероприятие!', 'warning')
             return render_template('index.html')
 
-        # Получаем образ
         outfit, weather = get_outfit(city, event)
 
         if outfit and weather:
-            # Сохраняем в сессию
             session['outfit'] = outfit
             session['weather'] = weather
             session['city'] = city
@@ -281,7 +270,6 @@ def index():
 
 @app.route('/result')
 def result():
-    """Страница с результатом"""
     outfit = session.get('outfit')
     weather = session.get('weather')
     city = session.get('city')
@@ -300,7 +288,6 @@ def result():
 
 @app.route('/reset')
 def reset():
-    """Очистка сессии"""
     session.clear()
     flash('Все сброшено! Можете подобрать новый образ', 'info')
     return redirect(url_for('index'))
