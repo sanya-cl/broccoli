@@ -5,8 +5,6 @@ import datetime
 app = Flask(__name__)
 app.secret_key = 'your secret key is here'
 
-'''АУТФИТЫ'''
-
 WEATHER_OUTFITS = {
     'sunny_hot': {
         'id': 1,
@@ -58,18 +56,89 @@ WEATHER_OUTFITS = {
     }
 }
 
-'''ФУНКЦИИ'''
 
 def get_outfit_by_id(outfit_id):
-    for outfit in WEATHER_OUTFITS.values():  #Образ по id.
+    for outfit in WEATHER_OUTFITS.values():
         if outfit['id'] == outfit_id:
             return outfit
     return None
 
+
 def get_all_outfits():
-    return list(WEATHER_OUTFITS.values()) #Все образы.
-
-def recommend_outfit(weather_condition, event_type)
+    return list(WEATHER_OUTFITS.values())
 
 
+def recommend_outfit(weather_condition, event_type):
+    best_match = None
+    for outfit in WEATHER_OUTFITS.values():
+        if (weather_condition in outfit['weather_condition'] or
+            outfit['weather_condition'] in weather_condition) and \
+                (event_type in outfit['event_type'] or outfit['event_type'] in event_type):
+            best_match = outfit
+            break
+    if best_match is None:
+        for outfit in WEATHER_OUTFITS.values():
+            if weather_condition in outfit['weather_condition'] or \
+                    outfit['weather_condition'] in weather_condition:
+                best_match = outfit
+                break
+    return best_match
 
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    recommended_outfits = []
+    selected_date = None
+
+    if request.method == 'POST':
+        selected_date = request.form.get('date')
+        weather_condition = request.form.get('weather')
+        event_type = request.form.get('event')
+        outfit_id = request.form.get('outfit_id')
+
+        if outfit_id:
+            outfit = get_outfit_by_id(int(outfit_id))
+            if outfit:
+                recommended_outfits = [outfit]
+                flash(f'Выбран аутфит: {outfit["name"]}', 'success')
+        elif weather_condition and event_type:
+            outfit = recommend_outfit(weather_condition, event_type)
+            if outfit:
+                recommended_outfits = [outfit]
+                flash(f'Рекомендованный аутфит: {outfit["name"]}', 'success')
+            else:
+                flash('Не найдено подходящего аутфита', 'warning')
+        elif weather_condition:
+            for outfit in WEATHER_OUTFITS.values():
+                if weather_condition in outfit['weather_condition'] or \
+                        outfit['weather_condition'] in weather_condition:
+                    recommended_outfits.append(outfit)
+            if recommended_outfits:
+                flash('Найдены подходящие аутфиты по погоде', 'success')
+            else:
+                flash('Не найдено аутфитов для выбранной погоды', 'warning')
+        else:
+            flash('Пожалуйста, выберите погоду или конкретный аутфит', 'warning')
+
+    return render_template('index.html',
+                           outfits=get_all_outfits(),
+                           recommended=recommended_outfits,
+                           selected_date=selected_date)
+
+
+@app.route('/outfit/<int:outfit_id>')
+def outfit_detail(outfit_id):
+    outfit = get_outfit_by_id(outfit_id)
+    if outfit is None:
+        flash('Аутфит не найден', 'danger')
+        return redirect(url_for('index'))
+    return render_template('outfit_detail.html', outfit=outfit)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
